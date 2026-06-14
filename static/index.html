@@ -3,31 +3,23 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Crop Disease AI | Intelligent Agriculture Diagnostics</title>
-  <meta name="description" content="State-of-the-art crop disease detection powered by EfficientNet-B4. Upload a leaf photograph for instant AI analysis and Grad-CAM explainability." />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;700;800&display=swap" rel="stylesheet" />
+  <title>Crop Disease Classifier</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      /* Premium Color Palette */
-      --primary: #10b981;
-      --primary-hover: #059669;
-      --secondary: #3b82f6;
-      --accent: #8b5cf6;
-      --bg-base: #020617;
-      --bg-card: rgba(15, 23, 42, 0.65);
-      --border-light: rgba(255, 255, 255, 0.08);
-      --border-focus: rgba(16, 185, 129, 0.5);
-      --text-main: #f8fafc;
-      --text-muted: #94a3b8;
-      --text-dark: #cbd5e1;
-      
-      /* Effects */
-      --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-      --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.2), 0 4px 6px -2px rgba(0, 0, 0, 0.1);
-      --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
-      --shadow-glow: 0 0 25px rgba(16, 185, 129, 0.2);
+      --bg: #000000;
+      --bg-card: #0a0a0a;
+      --bg-hover: #141414;
+      --border: #222222;
+      --border-hover: #333333;
+      --text-main: #ededed;
+      --text-muted: #888888;
+      --primary: #0070f3;
+      --success: #10b981;
+      --success-bg: rgba(16, 185, 129, 0.1);
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     }
 
     * {
@@ -37,317 +29,177 @@
     }
 
     body {
-      font-family: 'Inter', sans-serif;
-      background-color: var(--bg-base);
+      font-family: var(--font-sans);
+      background-color: var(--bg);
       color: var(--text-main);
-      min-height: 100vh;
-      overflow-x: hidden;
-      line-height: 1.6;
+      line-height: 1.5;
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
-    }
-
-    h1, h2, h3, h4, .outfit {
-      font-family: 'Outfit', sans-serif;
-    }
-
-    /* Dynamic Premium Background */
-    .bg-mesh {
-      position: fixed;
-      inset: 0;
-      z-index: 0;
-      overflow: hidden;
-      pointer-events: none;
-      background: radial-gradient(circle at top left, rgba(16, 185, 129, 0.05) 0%, transparent 40%),
-                  radial-gradient(circle at bottom right, rgba(59, 130, 246, 0.05) 0%, transparent 40%);
-    }
-
-    .ambient-orb {
-      position: absolute;
-      border-radius: 50%;
-      filter: blur(120px);
-      opacity: 0.5;
-      animation: drift 20s ease-in-out infinite alternate;
-    }
-
-    .orb-primary {
-      width: 45vw;
-      height: 45vw;
-      top: -10%;
-      left: -10%;
-      background: radial-gradient(circle, var(--primary) 0%, transparent 60%);
-    }
-
-    .orb-secondary {
-      width: 40vw;
-      height: 40vw;
-      bottom: -15%;
-      right: -5%;
-      background: radial-gradient(circle, var(--secondary) 0%, transparent 60%);
-      animation-delay: -10s;
-    }
-
-    .orb-accent {
-      width: 30vw;
-      height: 30vw;
-      top: 30%;
-      left: 50%;
-      transform: translateX(-50%);
-      background: radial-gradient(circle, var(--accent) 0%, transparent 60%);
-      animation-delay: -5s;
-      opacity: 0.3;
-    }
-
-    @keyframes drift {
-      0% { transform: translate(0, 0) scale(1); }
-      100% { transform: translate(5%, 5%) scale(1.1); }
-    }
-
-    /* Container Layout */
-    .container {
-      position: relative;
-      z-index: 1;
-      max-width: 1000px;
-      margin: 0 auto;
-      padding: 4rem 1.5rem;
+      min-height: 100vh;
       display: flex;
       flex-direction: column;
-      gap: 3rem;
+      align-items: center;
+      background-image: 
+        radial-gradient(circle at 50% 0%, rgba(255,255,255,0.03) 0%, transparent 50%),
+        radial-gradient(circle at 50% 100%, rgba(16,185,129,0.03) 0%, transparent 50%);
     }
 
-    /* Header Styling */
-    .header {
-      text-align: center;
-      max-width: 800px;
+    /* Container */
+    .container {
+      width: 100%;
+      max-width: 860px;
+      padding: 4rem 1.5rem;
       margin: 0 auto;
     }
 
-    .status-badge {
+    /* Header */
+    header {
+      text-align: center;
+      margin-bottom: 3.5rem;
+      animation: fade-in 0.8s ease-out;
+    }
+
+    .badge {
       display: inline-flex;
       align-items: center;
-      gap: 0.5rem;
-      background: rgba(16, 185, 129, 0.1);
-      border: 1px solid rgba(16, 185, 129, 0.2);
-      color: var(--primary);
+      gap: 6px;
+      padding: 4px 12px;
       border-radius: 9999px;
-      padding: 0.4rem 1.2rem;
-      font-size: 0.85rem;
-      font-weight: 600;
-      letter-spacing: 0.05em;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      font-weight: 500;
+      letter-spacing: 0.02em;
       margin-bottom: 1.5rem;
-      box-shadow: 0 0 20px rgba(16, 185, 129, 0.1);
-      animation: pulse-glow 3s infinite;
     }
 
-    @keyframes pulse-glow {
-      0%, 100% { box-shadow: 0 0 15px rgba(16, 185, 129, 0.1); }
-      50% { box-shadow: 0 0 25px rgba(16, 185, 129, 0.3); }
+    .badge span {
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--success);
+      box-shadow: 0 0 8px var(--success);
     }
 
-    .header h1 {
-      font-size: clamp(2.5rem, 6vw, 4rem);
-      font-weight: 800;
+    h1 {
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      font-weight: 700;
+      letter-spacing: -0.04em;
       line-height: 1.1;
       margin-bottom: 1rem;
-      background: linear-gradient(135deg, #ffffff 0%, #cbd5e1 50%, #94a3b8 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      letter-spacing: -0.02em;
-    }
-
-    .header h1 span {
-      background: linear-gradient(135deg, #10b981 0%, #3b82f6 100%);
+      background: linear-gradient(180deg, #ffffff 0%, #a0a0a0 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
 
-    .header p {
-      font-size: 1.1rem;
+    .subtitle {
+      font-size: 1.125rem;
       color: var(--text-muted);
-      max-width: 600px;
-      margin: 0 auto 2rem;
-      line-height: 1.7;
+      max-width: 540px;
+      margin: 0 auto;
+      font-weight: 400;
     }
 
-    /* Stats Grid */
-    .stats-row {
-      display: flex;
-      justify-content: center;
-      gap: 1rem;
-      flex-wrap: wrap;
-    }
-
-    .stat-pill {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
+    /* Card System */
+    .card {
       background: var(--bg-card);
-      backdrop-filter: blur(10px);
-      border: 1px solid var(--border-light);
-      border-radius: 9999px;
-      padding: 0.5rem 1.2rem;
-      font-size: 0.85rem;
-      font-weight: 500;
-      color: var(--text-dark);
-      transition: all 0.3s ease;
-    }
-
-    .stat-pill:hover {
-      border-color: rgba(255, 255, 255, 0.2);
-      transform: translateY(-2px);
-      background: rgba(30, 41, 59, 0.8);
-    }
-
-    .stat-icon {
-      color: var(--primary);
-    }
-
-    /* Glassmorphic Cards */
-    .glass-card {
-      background: var(--bg-card);
-      backdrop-filter: blur(24px);
-      -webkit-backdrop-filter: blur(24px);
-      border: 1px solid var(--border-light);
-      border-radius: 24px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
       padding: 2.5rem;
-      box-shadow: var(--shadow-lg);
-      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 4px 24px -6px rgba(0,0,0,0.5);
+      transition: border-color 0.2s ease;
       position: relative;
       overflow: hidden;
     }
 
-    .glass-card::before {
+    .card::before {
       content: '';
       position: absolute;
       top: 0; left: 0; right: 0; height: 1px;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.06), transparent);
     }
 
-    .glass-card:hover {
-      border-color: rgba(255, 255, 255, 0.15);
-      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6), var(--shadow-glow);
-    }
-
-    /* Upload Area */
-    .upload-zone {
-      border: 2px dashed rgba(148, 163, 184, 0.3);
-      border-radius: 16px;
+    /* Upload Zone */
+    .upload-area {
+      border: 1px dashed var(--border);
+      border-radius: 8px;
       padding: 4rem 2rem;
       text-align: center;
       cursor: pointer;
-      transition: all 0.3s ease;
-      background: rgba(15, 23, 42, 0.4);
-      position: relative;
+      background: rgba(255,255,255,0.01);
+      transition: all 0.2s ease;
     }
 
-    .upload-zone.drag-over {
-      border-color: var(--primary);
-      background: rgba(16, 185, 129, 0.05);
-      transform: scale(1.01);
+    .upload-area:hover, .upload-area.dragover {
+      border-color: #555;
+      background: var(--bg-hover);
     }
 
-    .upload-icon-wrapper {
-      width: 72px;
-      height: 72px;
-      background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(59, 130, 246, 0.2));
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 20px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 0 auto 1.5rem;
-      color: var(--primary);
-      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-      transition: transform 0.3s ease;
-    }
-
-    .upload-zone:hover .upload-icon-wrapper {
-      transform: scale(1.1) rotate(5deg);
-      background: linear-gradient(135deg, rgba(16, 185, 129, 0.3), rgba(59, 130, 246, 0.3));
-    }
-
-    .upload-icon-wrapper svg {
-      width: 32px;
-      height: 32px;
-    }
-
-    .upload-zone h3 {
-      font-size: 1.25rem;
-      font-weight: 600;
-      margin-bottom: 0.5rem;
-      color: #fff;
-    }
-
-    .upload-zone p {
+    .upload-icon {
+      width: 48px;
+      height: 48px;
+      margin: 0 auto 1rem;
       color: var(--text-muted);
-      font-size: 0.95rem;
+      transition: color 0.2s;
+    }
+
+    .upload-area:hover .upload-icon {
+      color: var(--text-main);
+    }
+
+    .upload-title {
+      font-size: 1.125rem;
+      font-weight: 500;
+      color: var(--text-main);
+      margin-bottom: 0.5rem;
+    }
+
+    .upload-desc {
+      font-size: 0.875rem;
+      color: var(--text-muted);
       margin-bottom: 1.5rem;
     }
 
-    /* Buttons */
-    .btn-primary {
+    .btn {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 0.5rem;
-      background: linear-gradient(135deg, var(--primary), var(--primary-hover));
-      color: #fff;
-      border: none;
-      border-radius: 12px;
-      padding: 0.75rem 1.5rem;
-      font-family: 'Outfit', sans-serif;
-      font-size: 1rem;
-      font-weight: 600;
+      gap: 8px;
+      background: var(--text-main);
+      color: var(--bg);
+      border: 1px solid transparent;
+      padding: 0 16px;
+      height: 40px;
+      border-radius: 6px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      font-family: inherit;
       cursor: pointer;
-      transition: all 0.3s ease;
-      box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3);
+      transition: all 0.2s ease;
     }
 
-    .btn-primary:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
-    }
-
-    .btn-primary:active {
-      transform: translateY(0);
+    .btn:hover {
+      background: #ffffff;
+      transform: translateY(-1px);
     }
 
     .btn-secondary {
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid var(--border-light);
-      box-shadow: none;
+      background: transparent;
+      color: var(--text-main);
+      border: 1px solid var(--border);
     }
 
     .btn-secondary:hover {
-      background: rgba(255, 255, 255, 0.1);
-      box-shadow: var(--shadow-sm);
+      background: var(--bg-hover);
+      border-color: var(--border-hover);
     }
 
-    .file-input-hidden {
-      display: none;
-    }
-
-    .supported-formats {
-      margin-top: 1.5rem;
-      display: flex;
-      justify-content: center;
-      gap: 0.75rem;
-      flex-wrap: wrap;
-    }
-
-    .format-tag {
-      background: rgba(0, 0, 0, 0.3);
-      border: 1px solid var(--border-light);
-      border-radius: 6px;
-      padding: 0.25rem 0.6rem;
-      font-size: 0.75rem;
-      color: var(--text-muted);
-      font-weight: 500;
-      letter-spacing: 0.05em;
-    }
+    .file-input { display: none; }
 
     /* Loader */
-    .loader-view {
+    #view-loader {
       display: none;
       flex-direction: column;
       align-items: center;
@@ -355,530 +207,286 @@
       text-align: center;
     }
 
-    .spinner-ring {
-      width: 64px;
-      height: 64px;
-      position: relative;
-      margin-bottom: 2rem;
-    }
-
-    .spinner-ring::before, .spinner-ring::after {
-      content: '';
-      position: absolute;
-      inset: 0;
+    .spinner {
+      width: 32px;
+      height: 32px;
+      border: 2px solid var(--border);
+      border-top-color: var(--text-main);
       border-radius: 50%;
-      border: 3px solid transparent;
-    }
-
-    .spinner-ring::before {
-      border-top-color: var(--primary);
-      border-right-color: var(--primary);
-      animation: spin 1.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite;
-    }
-
-    .spinner-ring::after {
-      border-bottom-color: var(--secondary);
-      border-left-color: var(--secondary);
-      animation: spin 2s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite reverse;
-    }
-
-    @keyframes spin { 100% { transform: rotate(360deg); } }
-
-    .loader-title {
-      font-size: 1.1rem;
-      font-weight: 600;
+      animation: spin 0.8s linear infinite;
       margin-bottom: 1.5rem;
-      color: #fff;
     }
 
-    .step-list {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-      text-align: left;
-      width: 100%;
-      max-width: 300px;
-    }
+    @keyframes spin { to { transform: rotate(360deg); } }
 
-    .step-item {
-      font-size: 0.9rem;
+    .loading-text {
+      font-size: 0.875rem;
       color: var(--text-muted);
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      opacity: 0.4;
-      transition: all 0.4s ease;
-      transform: translateX(-10px);
+      letter-spacing: 0.02em;
     }
 
-    .step-item.active {
-      opacity: 1;
-      color: #fff;
-      transform: translateX(0);
-    }
-
-    .step-item.complete {
-      opacity: 1;
-      color: var(--primary);
-      transform: translateX(0);
-    }
-
-    .step-icon {
-      width: 20px;
-      height: 20px;
-      border-radius: 50%;
-      border: 2px solid currentColor;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.3s;
-    }
-
-    .step-item.active .step-icon {
-      background: currentColor;
-      box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
-    }
-
-    .step-item.complete .step-icon {
-      background: currentColor;
-      border-color: currentColor;
-    }
-
-    .step-item.complete .step-icon::after {
-      content: '✓';
-      color: var(--bg-base);
-      font-size: 12px;
-      font-weight: bold;
-    }
-
-    /* Results View */
-    .results-view {
-      display: none;
-    }
+    /* Results */
+    #view-results { display: none; }
 
     .results-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
       margin-bottom: 2rem;
+      border-bottom: 1px solid var(--border);
       padding-bottom: 1.5rem;
-      border-bottom: 1px solid var(--border-light);
     }
 
     .results-header h2 {
-      font-size: 1.4rem;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
+      font-size: 1.25rem;
+      font-weight: 600;
+      letter-spacing: -0.02em;
     }
 
-    .results-grid {
+    .grid-2 {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 2.5rem;
     }
 
-    @media(max-width: 768px) {
-      .results-grid { grid-template-columns: 1fr; gap: 2rem; }
+    @media (max-width: 640px) {
+      .grid-2 { grid-template-columns: 1fr; gap: 2rem; }
       .results-header { flex-direction: column; gap: 1rem; align-items: flex-start; }
     }
 
-    .panel-title {
-      font-size: 0.85rem;
+    .section-label {
+      font-size: 0.75rem;
       text-transform: uppercase;
-      letter-spacing: 0.1em;
+      letter-spacing: 0.08em;
       color: var(--text-muted);
-      font-weight: 700;
-      margin-bottom: 1rem;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .image-preview-card {
-      background: rgba(0, 0, 0, 0.2);
-      border-radius: 16px;
-      padding: 1rem;
-      border: 1px solid var(--border-light);
-    }
-
-    .image-container {
-      border-radius: 12px;
-      overflow: hidden;
-      position: relative;
-      background: #000;
-      aspect-ratio: 1/1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .image-container img {
-      max-width: 100%;
-      max-height: 100%;
-      object-fit: contain;
-      display: block;
-    }
-
-    .confidence-badge {
-      margin-top: 1rem;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      background: rgba(16, 185, 129, 0.15);
-      border: 1px solid rgba(16, 185, 129, 0.3);
-      color: var(--primary);
-      border-radius: 8px;
-      padding: 0.5rem 1rem;
-      font-size: 0.9rem;
       font-weight: 600;
-      width: 100%;
+      margin-bottom: 1rem;
+    }
+
+    .image-frame {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      aspect-ratio: 1;
+      display: flex;
+      align-items: center;
       justify-content: center;
     }
 
-    /* Prediction List */
+    .image-frame img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .primary-result {
+      margin-top: 1rem;
+      background: var(--success-bg);
+      border: 1px solid rgba(16, 185, 129, 0.2);
+      border-radius: 6px;
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: var(--success);
+      font-size: 0.875rem;
+      font-weight: 500;
+    }
+
+    /* Prediction Bars */
     .prediction-list {
       display: flex;
       flex-direction: column;
-      gap: 1rem;
-    }
-
-    .pred-item {
-      background: rgba(255, 255, 255, 0.02);
-      border: 1px solid var(--border-light);
-      border-radius: 12px;
-      padding: 1rem;
-      transition: transform 0.2s ease;
-    }
-
-    .pred-item:hover {
-      transform: translateX(5px);
-      background: rgba(255, 255, 255, 0.04);
-    }
-
-    .pred-item.top-prediction {
-      background: linear-gradient(to right, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.02));
-      border-color: rgba(16, 185, 129, 0.4);
-      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.05);
-    }
-
-    .pred-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 0.75rem;
-    }
-
-    .pred-name {
-      font-weight: 600;
-      font-size: 0.95rem;
-      color: var(--text-main);
-    }
-
-    .pred-item.top-prediction .pred-name {
-      color: var(--primary);
-      font-size: 1.05rem;
-      font-weight: 700;
-    }
-
-    .pred-pct {
-      font-family: 'Inter', monospace;
-      font-weight: 600;
-      font-size: 0.9rem;
-      color: var(--text-dark);
-    }
-
-    .progress-track {
-      height: 6px;
-      background: rgba(255, 255, 255, 0.05);
-      border-radius: 999px;
-      overflow: hidden;
-    }
-
-    .progress-fill {
-      height: 100%;
-      border-radius: 999px;
-      background: linear-gradient(90deg, #475569, #94a3b8);
-      width: 0%;
-      transition: width 1.5s cubic-bezier(0.22, 1, 0.36, 1);
-    }
-
-    .pred-item.top-prediction .progress-fill {
-      background: linear-gradient(90deg, var(--primary), #34d399);
-      box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
-    }
-
-    .info-note {
-      margin-top: 2rem;
-      padding: 1rem 1.25rem;
-      background: rgba(59, 130, 246, 0.08);
-      border-left: 4px solid var(--secondary);
-      border-radius: 8px;
-      font-size: 0.85rem;
-      color: var(--text-dark);
-      display: flex;
-      gap: 1rem;
-      align-items: flex-start;
-    }
-
-    /* Architecture Section */
-    .arch-header {
-      font-size: 1.25rem;
-      font-weight: 700;
-      margin-bottom: 1.5rem;
-      display: flex;
-      align-items: center;
       gap: 0.75rem;
     }
 
-    .arch-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-      gap: 1rem;
-      margin-bottom: 2rem;
+    .pred-row {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 12px 16px;
+      position: relative;
+      overflow: hidden;
     }
 
-    .arch-card {
-      background: rgba(0, 0, 0, 0.2);
-      border: 1px solid var(--border-light);
-      border-radius: 16px;
-      padding: 1.25rem;
-      text-align: left;
-      transition: all 0.3s ease;
+    .pred-row.top {
+      border-color: rgba(255,255,255,0.15);
+      background: var(--bg-hover);
     }
 
-    .arch-card:hover {
-      background: rgba(255, 255, 255, 0.03);
-      border-color: rgba(255, 255, 255, 0.15);
-      transform: translateY(-3px);
-    }
-
-    .arch-icon {
-      width: 40px;
-      height: 40px;
-      border-radius: 12px;
+    .pred-info {
       display: flex;
+      justify-content: space-between;
       align-items: center;
-      justify-content: center;
-      margin-bottom: 1rem;
-      font-size: 1.2rem;
+      margin-bottom: 8px;
+      position: relative;
+      z-index: 2;
     }
 
-    .arch-label {
-      font-size: 0.75rem;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      margin-bottom: 0.25rem;
+    .pred-name {
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--text-main);
     }
 
-    .arch-value {
-      font-size: 0.95rem;
+    .pred-row.top .pred-name {
       font-weight: 600;
-      color: #fff;
     }
 
-    .disease-tags {
+    .pred-score {
+      font-size: 0.8125rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      font-family: monospace;
+    }
+
+    .bar-track {
+      height: 4px;
+      background: var(--border);
+      border-radius: 2px;
+      overflow: hidden;
+      position: relative;
+      z-index: 2;
+    }
+
+    .bar-fill {
+      height: 100%;
+      background: var(--text-muted);
+      border-radius: 2px;
+      width: 0%;
+      transition: width 1s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .pred-row.top .bar-fill {
+      background: var(--text-main);
+    }
+
+    /* Tech Specs */
+    .tech-specs {
+      margin-top: 2.5rem;
+      padding-top: 2.5rem;
+      border-top: 1px solid var(--border);
       display: flex;
       flex-wrap: wrap;
-      gap: 0.5rem;
+      gap: 1.5rem;
     }
 
-    .d-tag {
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      color: var(--text-dark);
-      border-radius: 8px;
-      padding: 0.4rem 0.8rem;
-      font-size: 0.8rem;
-      transition: all 0.2s;
+    .spec-item {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
     }
 
-    .d-tag:hover {
-      background: rgba(255, 255, 255, 0.08);
-      color: #fff;
+    .spec-label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .spec-val {
+      font-size: 0.875rem;
+      color: var(--text-main);
+      font-weight: 500;
+    }
+
+    .notice {
+      margin-top: 2rem;
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      padding: 12px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+    }
+
+    @keyframes fade-in {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
   </style>
 </head>
 <body>
 
-<!-- Dynamic Background Elements -->
-<div class="bg-mesh">
-  <div class="ambient-orb orb-primary"></div>
-  <div class="ambient-orb orb-secondary"></div>
-  <div class="ambient-orb orb-accent"></div>
-</div>
-
 <div class="container">
   
-  <!-- Header Section -->
-  <header class="header">
-    <div class="status-badge">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
-      System Online & Ready
-    </div>
-    <h1>Crop Disease <span>Intelligence</span></h1>
-    <p>Empower your agricultural decisions with state-of-the-art AI. Upload a leaf scan to instantly detect diseases with explainable Grad-CAM visual insights.</p>
-    
-    <div class="stats-row">
-      <div class="stat-pill">
-        <span class="stat-icon">🎯</span> 91.3% Accuracy
-      </div>
-      <div class="stat-pill">
-        <span class="stat-icon">🧠</span> EfficientNet-B4
-      </div>
-      <div class="stat-pill">
-        <span class="stat-icon">⚡</span> Sub-second Analysis
-      </div>
-    </div>
+  <header>
+    <div class="badge"><span></span> Model Online</div>
+    <h1>Crop Disease Classifier</h1>
+    <p class="subtitle">Upload a high-resolution leaf scan. Our EfficientNet-B4 architecture processes the image instantly, providing highly accurate diagnosis and visual Grad-CAM analysis.</p>
   </header>
 
-  <!-- Main Interface Card -->
-  <main class="glass-card">
+  <main class="card">
     
-    <!-- Upload View -->
-    <div id="upload-view">
-      <div class="upload-zone" id="dropzone">
-        <div class="upload-icon-wrapper">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
-            <polyline points="17 8 12 3 7 8"/>
-            <line x1="12" y1="3" x2="12" y2="15"/>
-          </svg>
-        </div>
-        <h3 class="outfit">Upload Leaf Scan</h3>
-        <p>Drag and drop your image here, or browse your device</p>
-        
-        <button class="btn-primary" id="btn-browse">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-          Select Image
-        </button>
-        <input type="file" id="file-input" class="file-input-hidden" accept="image/jpeg,image/png,image/jpg,image/webp" />
-        
-        <div class="supported-formats">
-          <span class="format-tag">JPG</span>
-          <span class="format-tag">PNG</span>
-          <span class="format-tag">WEBP</span>
-          <span class="format-tag">Max 20MB</span>
-        </div>
+    <!-- Upload State -->
+    <div id="view-upload">
+      <div class="upload-area" id="dropzone">
+        <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+          <polyline points="17 8 12 3 7 8"></polyline>
+          <line x1="12" y1="3" x2="12" y2="15"></line>
+        </svg>
+        <h3 class="upload-title">Select an image</h3>
+        <p class="upload-desc">Drag and drop or click to browse (JPEG, PNG, WEBP)</p>
+        <button class="btn" id="btn-browse">Browse Files</button>
+        <input type="file" id="file-input" class="file-input" accept="image/jpeg,image/png,image/jpg,image/webp">
       </div>
-    </div>
-
-    <!-- Processing Loader View -->
-    <div id="loader-view" class="loader-view">
-      <div class="spinner-ring"></div>
-      <h3 class="loader-title outfit">Analyzing Specimen</h3>
       
-      <div class="step-list">
-        <div class="step-item" id="step-0">
-          <div class="step-icon"></div>
-          <span>Image pre-processing & normalization</span>
+      <div class="tech-specs">
+        <div class="spec-item">
+          <span class="spec-label">Architecture</span>
+          <span class="spec-val">EfficientNet-B4</span>
         </div>
-        <div class="step-item" id="step-1">
-          <div class="step-icon"></div>
-          <span>Deep neural network forward pass</span>
+        <div class="spec-item">
+          <span class="spec-label">Parameters</span>
+          <span class="spec-val">19.3M</span>
         </div>
-        <div class="step-item" id="step-2">
-          <div class="step-icon"></div>
-          <span>Extracting Grad-CAM spatial features</span>
+        <div class="spec-item">
+          <span class="spec-label">Accuracy</span>
+          <span class="spec-val">91.3% Macro-F1</span>
         </div>
-        <div class="step-item" id="step-3">
-          <div class="step-icon"></div>
-          <span>Aggregating top confidence scores</span>
+        <div class="spec-item">
+          <span class="spec-label">Classes</span>
+          <span class="spec-val">10 Disease Types</span>
         </div>
       </div>
     </div>
 
-    <!-- Results View -->
-    <div id="results-view" class="results-view">
+    <!-- Loading State -->
+    <div id="view-loader">
+      <div class="spinner"></div>
+      <div class="loading-text" id="loading-text">Running inference engine...</div>
+    </div>
+
+    <!-- Results State -->
+    <div id="view-results">
       <div class="results-header">
-        <h2 class="outfit">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-          Diagnostic Report
-        </h2>
-        <button class="btn-primary btn-secondary" id="btn-reset">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg>
-          Analyze Another
-        </button>
+        <h2>Diagnosis Report</h2>
+        <button class="btn btn-secondary" id="btn-reset">New Analysis</button>
       </div>
-      
-      <div class="results-grid">
-        <!-- Visual Evidence Panel -->
+
+      <div class="grid-2">
         <div>
-          <div class="panel-title">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg>
-            Visual Evidence (Grad-CAM)
+          <div class="section-label">Grad-CAM Activation</div>
+          <div class="image-frame">
+            <img id="result-img" alt="Analyzed Leaf" />
           </div>
-          <div class="image-preview-card">
-            <div class="image-container">
-              <img id="preview-image" alt="Analyzed Leaf" />
-            </div>
-            <div id="top-diagnosis-badge"></div>
-          </div>
+          <div id="primary-badge" class="primary-result"></div>
         </div>
-        
-        <!-- Probability Distribution Panel -->
+
         <div>
-          <div class="panel-title">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-            Confidence Distribution
-          </div>
-          <div class="prediction-list" id="prediction-list">
-            <!-- Predictions injected here -->
-          </div>
+          <div class="section-label">Confidence Distribution</div>
+          <div class="prediction-list" id="prediction-list"></div>
         </div>
       </div>
       
-      <div class="info-note" id="notice-box"></div>
+      <div class="notice" id="notice-box"></div>
     </div>
 
   </main>
-
-  <!-- Technical Specs -->
-  <section class="glass-card" style="padding: 2rem;">
-    <div class="arch-header outfit">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
-      Technical Specifications
-    </div>
-    
-    <div class="arch-grid">
-      <div class="arch-card">
-        <div class="arch-icon" style="background: rgba(16, 185, 129, 0.15); color: var(--primary);">🧠</div>
-        <div class="arch-label">Architecture</div>
-        <div class="arch-value">EfficientNet-B4</div>
-      </div>
-      <div class="arch-card">
-        <div class="arch-icon" style="background: rgba(59, 130, 246, 0.15); color: var(--secondary);">📐</div>
-        <div class="arch-label">Resolution</div>
-        <div class="arch-value">380 × 380 px</div>
-      </div>
-      <div class="arch-card">
-        <div class="arch-icon" style="background: rgba(139, 92, 246, 0.15); color: var(--accent);">⚖️</div>
-        <div class="arch-label">Complexity</div>
-        <div class="arch-value">19.3M Params</div>
-      </div>
-      <div class="arch-card">
-        <div class="arch-icon" style="background: rgba(245, 158, 11, 0.15); color: #f59e0b;">🛡️</div>
-        <div class="arch-label">Robustness</div>
-        <div class="arch-value">Mixed Precision</div>
-      </div>
-    </div>
-    
-    <div class="panel-title" style="margin-top: 1rem;">Supported Pathologies</div>
-    <div class="disease-tags">
-      <span class="d-tag">🌱 Healthy</span>
-      <span class="d-tag">🦠 Bacterial Blight</span>
-      <span class="d-tag">🟤 Brown Spot</span>
-      <span class="d-tag">💥 Blast Fungus</span>
-      <span class="d-tag">🍃 Leaf Scald</span>
-      <span class="d-tag">🌾 Sheath Rot</span>
-      <span class="d-tag">🔵 False Smut</span>
-      <span class="d-tag">🦟 Tungro Virus</span>
-      <span class="d-tag">🟡 Narrow Brown Spot</span>
-      <span class="d-tag">⚪ Sheath Blight</span>
-    </div>
-  </section>
 
 </div>
 
@@ -886,39 +494,40 @@
 // Logic Configuration
 const CLASSES = ["Healthy","Bacterial Blight","Brown Spot","Blast Fungus",
   "Leaf Scald","Sheath Rot","False Smut","Tungro Virus","Narrow Brown Spot","Sheath Blight"];
-const ML_URL = '';
+const ML_URL = ''; // Empty means same host
 
 // DOM Elements
 const views = {
-  upload: document.getElementById('upload-view'),
-  loader: document.getElementById('loader-view'),
-  results: document.getElementById('results-view')
+  upload: document.getElementById('view-upload'),
+  loader: document.getElementById('view-loader'),
+  results: document.getElementById('view-results')
 };
 
 const dropzone = document.getElementById('dropzone');
 const fileInput = document.getElementById('file-input');
 const btnBrowse = document.getElementById('btn-browse');
 const btnReset = document.getElementById('btn-reset');
+const loadingText = document.getElementById('loading-text');
 
 const ui = {
-  img: document.getElementById('preview-image'),
+  img: document.getElementById('result-img'),
   list: document.getElementById('prediction-list'),
-  badge: document.getElementById('top-diagnosis-badge'),
+  badge: document.getElementById('primary-badge'),
   notice: document.getElementById('notice-box')
 };
 
 // Event Listeners
-['dragenter', 'dragover'].forEach(e => {
-  dropzone.addEventListener(e, ev => {
-    ev.preventDefault(); 
-    dropzone.classList.add('drag-over');
+['dragenter', 'dragover'].forEach(eventName => {
+  dropzone.addEventListener(eventName, e => {
+    e.preventDefault(); 
+    dropzone.classList.add('dragover');
   });
 });
 
-['dragleave', 'drop'].forEach(e => {
-  dropzone.addEventListener(e, ev => {
-    ev.preventDefault(); 
-    dropzone.classList.remove('drag-over');
+['dragleave', 'drop'].forEach(eventName => {
+  dropzone.addEventListener(eventName, e => {
+    e.preventDefault(); 
+    dropzone.classList.remove('dragover');
   });
 });
 
@@ -931,60 +540,25 @@ function resetUI() {
   views.upload.style.display = 'block';
   views.loader.style.display = 'none';
   views.results.style.display = 'none';
-  
-  ui.list.innerHTML = '';
-  ui.badge.innerHTML = '';
-  ui.img.src = '';
   fileInput.value = '';
-  
-  [0,1,2,3].forEach(i => {
-    document.getElementById(`step-${i}`).className = 'step-item';
-  });
 }
 
 function processFile(file) {
   if (!file) return;
-  if (!file.type.match(/^image\//)) {
-    alert('Invalid format. Please upload a JPG, PNG, or WEBP image.');
+  if (!file.type.startsWith('image/')) {
+    alert('Invalid format. Please upload an image file.');
     return;
   }
-  
   const reader = new FileReader();
   reader.onerror = () => alert('Failed to read file.');
   reader.onload = ev => executeAnalysis(file, ev.target.result);
   reader.readAsDataURL(file);
 }
 
-// Visual Step Sequence
-let animTimers = [];
-function animateSteps(onComplete) {
-  animTimers.forEach(clearTimeout);
-  animTimers = [];
-  
-  const delays = [0, 800, 1600, 2400];
-  
-  [0, 1, 2, 3].forEach((stepId, i) => {
-    animTimers.push(setTimeout(() => {
-      // Mark previous as complete
-      if (i > 0) document.getElementById(`step-${i-1}`).className = 'step-item complete';
-      // Mark current as active
-      document.getElementById(`step-${stepId}`).className = 'step-item active';
-    }, delays[i]));
-  });
-  
-  animTimers.push(setTimeout(() => {
-    document.getElementById('step-3').className = 'step-item complete';
-    onComplete();
-  }, 3200));
-}
-
-// Fallback Generators (FNV-32 Hashing)
+// Fallback Generators
 function fnvHash(str) {
   let h = 2166136261;
-  for (let i = 0; i < str.length; i++) {
-    h ^= str.charCodeAt(i);
-    h = (Math.imul(h, 16777619) >>> 0);
-  }
+  for (let i = 0; i < str.length; i++) h = Math.imul(h ^ str.charCodeAt(i), 16777619) >>> 0;
   return h;
 }
 
@@ -993,14 +567,11 @@ function seededRandom(seedStr, salt) {
 }
 
 function generateDemoPredictions(dataUrl) {
-  const seed = String(fnvHash(dataUrl.slice(30, 150)));
+  const seed = String(fnvHash(dataUrl.slice(30, 100)));
   let raw = CLASSES.map((_, i) => seededRandom(seed, i));
-  
-  // Boost one class to be the winner
   const targetIdx = fnvHash(seed) % CLASSES.length;
   raw[targetIdx] = seededRandom(seed, 'boost') * 0.4 + 0.6;
   
-  // Softmax
   const max = Math.max(...raw);
   const exp = raw.map(r => Math.exp((r - max) * 6));
   const sum = exp.reduce((a, b) => a + b, 0);
@@ -1012,43 +583,34 @@ function generateDemoPredictions(dataUrl) {
 }
 
 function generateDemoHeatmap(dataUrl, callback) {
-  const seed = String(fnvHash(dataUrl.slice(30, 150)));
+  const seed = String(fnvHash(dataUrl.slice(30, 100)));
   const img = new Image();
   img.onerror = () => callback(dataUrl);
   img.onload = () => {
     try {
       const canvas = document.createElement('canvas');
-      canvas.width = img.width; 
-      canvas.height = img.height;
+      canvas.width = img.width; canvas.height = img.height;
       const ctx = canvas.getContext('2d');
       ctx.drawImage(img, 0, 0);
       
-      const numSpots = 4 + (fnvHash(seed) % 3);
-      for (let i = 0; i < numSpots; i++) {
-        const cx = seededRandom(seed, i*5+1) * img.width;
-        const cy = seededRandom(seed, i*5+2) * img.height;
-        const r  = img.width * (0.1 + seededRandom(seed, i*5+3) * 0.15);
-        const alpha = (0.3 + seededRandom(seed, i*5+4) * 0.3).toFixed(2);
-        
+      for (let i = 0; i < 4; i++) {
+        const cx = seededRandom(seed, i*3+1) * img.width;
+        const cy = seededRandom(seed, i*3+2) * img.height;
+        const r  = img.width * (0.1 + seededRandom(seed, i*3+3) * 0.15);
         const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, r);
-        grad.addColorStop(0, `rgba(255, 40, 0, ${alpha})`);
-        grad.addColorStop(0.5, `rgba(255, 180, 0, ${(alpha * 0.6).toFixed(2)})`);
+        grad.addColorStop(0, 'rgba(255, 0, 0, 0.4)');
+        grad.addColorStop(0.5, 'rgba(255, 165, 0, 0.2)');
         grad.addColorStop(1, 'rgba(0, 0, 255, 0)');
-        
         ctx.fillStyle = grad;
-        ctx.beginPath();
-        ctx.arc(cx, cy, r, 0, Math.PI * 2);
-        ctx.fill();
+        ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.fill();
       }
-      callback(canvas.toDataURL('image/jpeg', 0.9));
-    } catch(e) { 
-      callback(dataUrl); 
-    }
+      callback(canvas.toDataURL('image/jpeg', 0.8));
+    } catch(e) { callback(dataUrl); }
   };
   img.src = dataUrl;
 }
 
-// Rendering Logic
+// Render Engine
 function renderResults(predictions, imgUrl, isRealML) {
   views.loader.style.display = 'none';
   views.results.style.display = 'block';
@@ -1059,16 +621,15 @@ function renderResults(predictions, imgUrl, isRealML) {
   const topPct = (top.prob * 100).toFixed(1);
   
   ui.badge.innerHTML = `
-    <div class="confidence-badge">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
-      Primary Diagnosis: ${top.cls} (${topPct}%)
-    </div>`;
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+    ${top.cls} &mdash; ${topPct}% Match
+  `;
     
   ui.notice.innerHTML = isRealML
-    ? `<div><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--secondary)" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg></div>
-       <div><strong>Live ML Inference:</strong> Results generated by the backend EfficientNet-B4 model.</div>`
-    : `<div><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--secondary)" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg></div>
-       <div><strong>Demo Mode Active:</strong> Running client-side simulation. To enable real predictions, ensure your Python backend is running and the model weights are loaded.</div>`;
+    ? `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg> 
+       Results generated by live inference on the server via PyTorch.`
+    : `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+       Demo Mode: Server is unreachable or models are missing. Running client-side simulation.`;
 
   ui.list.innerHTML = '';
   
@@ -1077,27 +638,29 @@ function renderResults(predictions, imgUrl, isRealML) {
     const pct = (p.prob * 100).toFixed(1);
     
     ui.list.insertAdjacentHTML('beforeend', `
-      <div class="pred-item ${isTop ? 'top-prediction' : ''}">
-        <div class="pred-header">
+      <div class="pred-row ${isTop ? 'top' : ''}">
+        <div class="pred-info">
           <span class="pred-name">${p.cls}</span>
-          <span class="pred-pct">${pct}%</span>
+          <span class="pred-score">${pct}%</span>
         </div>
-        <div class="progress-track">
-          <div class="progress-fill" data-width="${pct}"></div>
+        <div class="bar-track">
+          <div class="bar-fill" data-width="${pct}"></div>
         </div>
       </div>
     `);
   });
   
-  // Trigger animations
-  setTimeout(() => {
-    document.querySelectorAll('.progress-fill').forEach(bar => {
-      bar.style.width = bar.dataset.width + '%';
+  // Animate bars
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      document.querySelectorAll('.bar-fill').forEach(bar => {
+        bar.style.width = bar.dataset.width + '%';
+      });
     });
-  }, 100);
+  });
 }
 
-// Master Orchestrator
+// Orchestrator
 async function executeAnalysis(file, dataUrl) {
   views.upload.style.display = 'none';
   views.loader.style.display = 'flex';
@@ -1105,7 +668,6 @@ async function executeAnalysis(file, dataUrl) {
   let backendResult = null;
   let backendError = null;
   
-  // Attempt live API request
   const fetchPromise = (async () => {
     try {
       const formData = new FormData();
@@ -1126,10 +688,14 @@ async function executeAnalysis(file, dataUrl) {
     }
   })();
 
-  // Await UI animation timeline
-  await new Promise(resolve => animateSteps(resolve));
+  // Minimal loading animation
+  loadingText.innerText = "Processing image tensor...";
+  await new Promise(r => setTimeout(r, 600));
+  loadingText.innerText = "Running EfficientNet forward pass...";
+  await new Promise(r => setTimeout(r, 600));
+  loadingText.innerText = "Extracting Grad-CAM features...";
   
-  // Wait for the API to actually finish (no artificial timeout, allows live ML to work correctly)
+  // Await real inference (no timeout)
   await fetchPromise;
   
   if (backendResult) {
@@ -1137,10 +703,8 @@ async function executeAnalysis(file, dataUrl) {
     const heatmapUrl = backendResult.gradcam_url ? (ML_URL + backendResult.gradcam_url) : dataUrl;
     renderResults(preds, heatmapUrl, true);
   } else {
-    if (backendError) {
-      alert("Live ML Error: " + backendError + "\n\nFalling back to demo mode.");
-    }
-    // Execute Demo Generation
+    if (backendError) alert("Live ML Error: " + backendError + "\n\nFalling back to demo mode.");
+    
     const preds = generateDemoPredictions(dataUrl);
     generateDemoHeatmap(dataUrl, (canvasUrl) => {
       renderResults(preds, canvasUrl, false);
