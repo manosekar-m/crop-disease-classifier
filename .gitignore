@@ -37,7 +37,9 @@ pyvenv.cfg
 # Data & outputs (very important to prevent 100MB+ github push rejection)
 data/
 outputs/
-*.pth
+!outputs/checkpoints/
+!outputs/checkpoints/best_model.pth
+# *.pth  (Commented out so we can track the model via LFS)
 *.pt
 *.h5
 
