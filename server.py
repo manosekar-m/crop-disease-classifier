@@ -19,24 +19,32 @@ STATIC_DIR = os.path.join(PROJECT_ROOT, "static")
 
 # Model state - protected by lock
 _lock    = threading.Lock()
-_state   = {"status": "loading", "model": None, "transform": None,
+_state   = {"status": "loading", "progress": 0, "model": None, "transform": None,
              "gradcam": None, "classes": None, "device": None}
+
+def _set_progress(p):
+    with _lock:
+        _state["progress"] = p
 
 def _load_model_thread():
     try:
         print("[ML] Starting background model load (importing PyTorch)...", flush=True)
+        _set_progress(10)
         import torch, yaml
         from model   import build_model
         from dataset import get_val_transforms
         from predict import GradCAM
 
         print("[ML] PyTorch loaded. Reading config...", flush=True)
+        _set_progress(30)
         with open("configs/config.yaml") as f:
             cfg = yaml.safe_load(f)
 
         device  = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         classes = cfg["classes"]
+        _set_progress(50)
         model   = build_model(cfg).to(device)
+        _set_progress(70)
 
         ckpt = "outputs/checkpoints/best_model.pth"
         if os.path.exists(ckpt):
@@ -46,6 +54,7 @@ def _load_model_thread():
         else:
             print("[ML] No checkpoint found. Using untrained weights for demonstration.", flush=True)
 
+        _set_progress(90)
         model.eval()
 
         with _lock:
@@ -54,6 +63,7 @@ def _load_model_thread():
             _state["gradcam"]   = GradCAM(model)
             _state["classes"]   = classes
             _state["device"]    = device
+            _state["progress"]  = 100
             _state["status"]    = "ready"
 
         print("[ML] Model ready! Predictions are now live.", flush=True)
@@ -61,6 +71,7 @@ def _load_model_thread():
     except Exception:
         with _lock:
             _state["status"] = "error"
+            _state["progress"] = 0
         print("[ML] ❌ Error loading model:", flush=True)
         traceback.print_exc()
 
@@ -111,8 +122,10 @@ class Handler(BaseHTTPRequestHandler):
         
         # API Routes
         if path == "/status":
-            with _lock: status = _state["status"]
-            return self._ok({"status": status})
+            with _lock: 
+                status = _state["status"]
+                progress = _state["progress"]
+            return self._ok({"status": status, "progress": progress})
             
         # Static file routing
         if path == "/" or path == "":

@@ -414,7 +414,7 @@
 <div class="container">
   
   <header>
-    <div class="badge"><span></span> Model Online</div>
+    <div class="badge" id="status-badge"><span></span> Loading App...</div>
     <h1>Crop Disease Classifier</h1>
     <p class="subtitle">Upload a high-resolution leaf scan. Our EfficientNet-B4 architecture processes the image instantly, providing highly accurate diagnosis and visual Grad-CAM analysis.</p>
   </header>
@@ -711,6 +711,48 @@ async function executeAnalysis(file, dataUrl) {
     });
   }
 }
+
+// Background Model Loading Status Polling
+async function pollStatus() {
+  const badge = document.getElementById('status-badge');
+  if (!badge) return;
+  const dot = badge.querySelector('span');
+  
+  try {
+    const res = await fetch(ML_URL + '/status');
+    if (res.ok) {
+      const data = await res.json();
+      
+      if (data.status === 'loading') {
+        const pct = data.progress !== undefined ? data.progress : 0;
+        badge.innerHTML = '<span></span> Initializing Model... ' + pct + '%';
+        const newDot = badge.querySelector('span');
+        newDot.style.background = '#0070f3';
+        newDot.style.boxShadow = '0 0 8px #0070f3';
+        setTimeout(pollStatus, 800);
+      } else if (data.status === 'error') {
+        badge.innerHTML = '<span></span> Model Error';
+        const newDot = badge.querySelector('span');
+        newDot.style.background = '#ef4444';
+        newDot.style.boxShadow = '0 0 8px #ef4444';
+      } else {
+        badge.innerHTML = '<span></span> Model Online';
+        const newDot = badge.querySelector('span');
+        newDot.style.background = 'var(--success)';
+        newDot.style.boxShadow = '0 0 8px var(--success)';
+      }
+    } else {
+      setTimeout(pollStatus, 2000);
+    }
+  } catch(err) {
+    // Retry on network error
+    setTimeout(pollStatus, 2000);
+  }
+}
+
+// Start polling on load
+pollStatus();
+
 </script>
 </body>
 </html>
