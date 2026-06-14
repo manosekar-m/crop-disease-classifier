@@ -206,7 +206,7 @@ if __name__ == "__main__":
     t = threading.Thread(target=_load_model_thread, daemon=True)
     t.start()
 
-    port = 8000
-    print(f"Starting Unified Server on http://localhost:{port}/")
+    port = int(os.environ.get("PORT", 8000))
+    print(f"Starting Unified Server on http://0.0.0.0:{port}/")
     print(f"   (Model is loading in the background. UI is available immediately.)")
     ThreadingHTTPServer(("", port), Handler).serve_forever()
