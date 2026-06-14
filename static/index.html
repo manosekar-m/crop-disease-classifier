@@ -1103,6 +1103,7 @@ async function executeAnalysis(file, dataUrl) {
   views.loader.style.display = 'flex';
   
   let backendResult = null;
+  let backendError = null;
   
   // Attempt live API request
   const fetchPromise = (async () => {
@@ -1116,21 +1117,29 @@ async function executeAnalysis(file, dataUrl) {
       if (res.ok) {
         const data = await res.json();
         if (data.top5) backendResult = data;
+      } else {
+        const errData = await res.json();
+        backendError = errData.error || `Server error: ${res.status}`;
       }
-    } catch(err) { /* Silent fail to demo mode */ }
+    } catch(err) { 
+      backendError = "Network error or backend not reachable.";
+    }
   })();
 
   // Await UI animation timeline
   await new Promise(resolve => animateSteps(resolve));
   
-  // Give API a brief grace period if still resolving
-  await Promise.race([fetchPromise, new Promise(r => setTimeout(r, 1000))]);
+  // Wait for the API to actually finish (no artificial timeout, allows live ML to work correctly)
+  await fetchPromise;
   
   if (backendResult) {
     const preds = backendResult.top5.map(t => ({ cls: t.class, prob: t.probability }));
     const heatmapUrl = backendResult.gradcam_url ? (ML_URL + backendResult.gradcam_url) : dataUrl;
     renderResults(preds, heatmapUrl, true);
   } else {
+    if (backendError) {
+      alert("Live ML Error: " + backendError + "\n\nFalling back to demo mode.");
+    }
     // Execute Demo Generation
     const preds = generateDemoPredictions(dataUrl);
     generateDemoHeatmap(dataUrl, (canvasUrl) => {
